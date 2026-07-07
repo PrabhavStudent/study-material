@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://www.youtube-nocookie.com">
+<link rel="preconnect" href="https://www.google.com">
+<link rel="preconnect" href="https://i.ytimg.com">
+<link rel="preconnect" href="https://s.ytimg.com" crossorigin>
+<link rel="dns-prefetch" href="https://www.youtube-nocookie.com">
+<title>DSA Video Vault</title>
+<style>
+  :root{
+    --bg:#f7f6f3;
+    --surface:#ffffff;
+    --border:#e7e4dd;
+    --text:#1f1d1a;
+    --text-soft:#6b6863;
+    --accent:#d97757;
+    --accent-soft:#f3e3dc;
+    --shadow: 0 1px 2px rgba(0,0,0,0.04), 0 4px 14px rgba(0,0,0,0.04);
+    --radius:14px;
+  }
+  [data-theme="dark"]{
+    --bg:#15140f;
+    --surface:#1d1c17;
+    --border:#302e27;
+    --text:#f2efe9;
+    --text-soft:#a49f95;
+    --accent:#e08a63;
+    --accent-soft:#3a2a22;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 6px 20px rgba(0,0,0,0.35);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, sans-serif;
+    transition: background .3s ease, color .3s ease;
+    min-height:100vh;
+  }
+  header{
+    position:sticky; top:0; z-index:20;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:18px 28px;
+    background:var(--bg);
+    border-bottom:1px solid var(--border);
+    transition:background .3s ease, border-color .3s ease;
+  }
+  .brand{display:flex; align-items:center; gap:10px;}
+  .brand-dot{width:10px;height:10px;border-radius:50%;background:var(--accent);}
+  .brand h1{font-size:17px; margin:0; font-weight:600; letter-spacing:-0.01em;}
+  .brand span{color:var(--text-soft); font-weight:400; font-size:13px; display:block; margin-top:1px;}
+
+  .toggle-btn{
+    border:1px solid var(--border);
+    background:var(--surface);
+    color:var(--text);
+    width:42px; height:42px;
+    border-radius:50%;
+    cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    transition: all .25s ease;
+    box-shadow:var(--shadow);
+  }
+  .toggle-btn:hover{ border-color:var(--accent); transform:scale(1.05); }
+  .toggle-btn svg{width:19px;height:19px;}
+
+  main{ max-width:1080px; margin:0 auto; padding:40px 24px 80px; }
+
+  .search-wrap{ margin-bottom:34px; }
+  .search-wrap input{
+    width:100%;
+    padding:14px 18px;
+    font-size:15px;
+    border-radius:12px;
+    border:1px solid var(--border);
+    background:var(--surface);
+    color:var(--text);
+    outline:none;
+    transition: border-color .2s ease, box-shadow .2s ease;
+  }
+  .search-wrap input:focus{ border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-soft); }
+
+  .category{ margin-bottom:38px; }
+  .category-title{
+    display:flex; align-items:center; gap:10px;
+    font-size:13px; text-transform:uppercase; letter-spacing:.08em;
+    color:var(--text-soft); font-weight:600;
+    margin-bottom:14px;
+  }
+  .category-title::after{
+    content:""; flex:1; height:1px; background:var(--border);
+  }
+
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(240px,1fr));
+    gap:14px;
+  }
+
+  .card{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:18px;
+    box-shadow:var(--shadow);
+    transition: transform .2s ease, border-color .2s ease;
+  }
+  .card:hover{ transform:translateY(-2px); border-color:var(--accent); }
+  .card h3{ margin:0 0 12px; font-size:15px; font-weight:600; letter-spacing:-0.01em; }
+
+  .video-btns{ display:flex; flex-wrap:wrap; gap:8px; }
+  .video-btn{
+    border:1px solid var(--border);
+    background:var(--bg);
+    color:var(--text);
+    font-size:13px;
+    padding:8px 12px;
+    border-radius:8px;
+    cursor:pointer;
+    display:flex; align-items:center; gap:6px;
+    transition: all .2s ease;
+  }
+  .video-btn:hover{ background:var(--accent); border-color:var(--accent); color:#fff; }
+  .video-btn svg{width:13px;height:13px;}
+
+  .hidden{ display:none !important; }
+
+  /* Modal */
+  .modal-overlay{
+    position:fixed; inset:0; background:rgba(0,0,0,0.6);
+    display:flex; align-items:center; justify-content:center;
+    z-index:100; padding:24px;
+    opacity:0; pointer-events:none;
+    transition:opacity .25s ease;
+  }
+  .modal-overlay.open{ opacity:1; pointer-events:auto; }
+  .modal-box{
+    background:#000;
+    width:100%; max-width:860px;
+    border-radius:16px;
+    overflow:hidden;
+    position:relative;
+    box-shadow:0 20px 60px rgba(0,0,0,0.5);
+    transform:scale(.96);
+    transition:transform .25s ease;
+  }
+  .modal-overlay.open .modal-box{ transform:scale(1); }
+  .modal-box .frame-wrap{ position:relative; width:100%; padding-top:56.25%; }
+  .modal-box iframe{ position:absolute; inset:0; width:100%; height:100%; border:0; opacity:0; transition:opacity .3s ease; }
+  .modal-box iframe.loaded{ opacity:1; }
+  .spinner{
+    position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+    color:#fff; font-size:13px; gap:10px; flex-direction:column;
+  }
+  .spinner .ring{
+    width:32px; height:32px; border-radius:50%;
+    border:3px solid rgba(255,255,255,0.2); border-top-color:var(--accent);
+    animation:spin .8s linear infinite;
+  }
+  .spinner.hidden{ display:none; }
+  @keyframes spin{ to{ transform:rotate(360deg); } }
+  .modal-close{
+    position:absolute; top:10px; right:10px; z-index:5;
+    width:34px; height:34px; border-radius:50%;
+    background:rgba(0,0,0,0.55); color:#fff; border:none;
+    cursor:pointer; display:flex; align-items:center; justify-content:center;
+    font-size:18px;
+  }
+  .modal-close:hover{ background:rgba(0,0,0,0.8); }
+
+  footer{
+    text-align:center; padding:30px 20px 50px;
+    color:var(--text-soft); font-size:12px;
+  }
+
+  @media (max-width:520px){
+    header{ padding:14px 18px; }
+    main{ padding:26px 16px 60px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <div class="brand-dot"></div>
+    <div>
+      <h1>DSA Video Vault</h1>
+      <span>Your curated problem-solving playlist</span>
+    </div>
+  </div>
+  <button class="toggle-btn" id="themeToggle" aria-label="Toggle dark mode">
+    <svg id="iconSun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+      <circle cx="12" cy="12" r="4"></circle>
+      <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path>
+    </svg>
+    <svg id="iconMoon" class="hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+    </svg>
+  </button>
+</header>
+
+<main>
+  <div class="search-wrap">
+    <input type="text" id="searchInput" placeholder="Search a topic or problem, e.g. Binary Search, Coin Change...">
+  </div>
+  <div id="content"></div>
+</main>
+
+<footer>Built for focused DSA revision · videos play right here</footer>
+
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal-box">
+    <button class="modal-close" id="modalClose">&times;</button>
+    <div class="frame-wrap">
+      <div class="spinner" id="modalSpinner"><div class="ring"></div><span>Loading video…</span></div>
+      <iframe id="modalFrame" src="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    </div>
+    <a id="modalFallback" href="#" target="_blank" style="display:block; text-align:center; padding:10px; background:#111; color:#aaa; font-size:12px; text-decoration:none;">Video not loading? Open on YouTube instead ↗</a>
+  </div>
+</div>
+
+<script>
+const DATA = [{"category": "Stack Problems", "problems": [{"title": "Car Fleet", "videos": ["https://www.youtube.com/shorts/jMGyuMaCkpk", "https://www.youtube.com/watch?v=Pr6T-3yB9RM"]}, {"title": "Valid Parenthesis", "videos": ["https://www.youtube.com/watch?v=NlHupEeDXzY", "https://www.youtube.com/watch?v=aKTGpBeOeZg&t=328s"]}]}, {"category": "Binary Search", "problems": [{"title": "Search 2d Matrix", "videos": ["https://www.youtube.com/watch?v=LEFFjgt5i6w", "https://www.youtube.com/shorts/SqLlqwa8sAQ"]}, {"title": "Minimum in Rotated Sorted Array", "videos": ["https://www.youtube.com/shorts/10dQo7ek2Ws", "https://youtu.be/nIVW4P8b1VA?si=gXD9dMgR9IFfh4c8"]}]}, {"category": "Linked List", "problems": [{"title": "Reverse Linked List", "videos": ["https://youtu.be/R-CKBYnOv1U?si=utxmdnG_SzhJbXhI", "https://youtube.com/shorts/llqdLez5dv8?si=q0Vh7PzyqVBT9jRK"]}, {"title": "Merge K-sorted List", "videos": ["https://www.youtube.com/shorts/LP46VHfRvDU", "https://youtu.be/VV19JFP6-0c?si=h2yN4JUcZLC7Mww3"]}, {"title": "Reverse nodes in K- Group", "videos": ["https://youtu.be/-swgIiMIlJo?si=q38zZOVRrrtJ38Pg", "https://www.youtube.com/shorts/JCLhtsboYEw"]}]}, {"category": "Heap", "problems": [{"title": "Kth Largest Element in a stream", "videos": ["https://www.youtube.com/shorts/RIy1nGqSONg", "https://www.youtube.com/watch?v=hOjcdrqMoQ8"]}, {"title": "Task Scheduler", "videos": ["https://youtu.be/s8p8ukTyA2I?si=dyZId-AW2tTGH2nC"]}, {"title": "Twitter", "videos": ["https://www.youtube.com/shorts/apS1ohnRJNE", "https://youtu.be/tH051S6aM5M?si=u8_AdtgIzvUd1C7n"]}]}, {"category": "Back tracking", "problems": [{"title": "Subsets", "videos": ["https://youtu.be/pNzljlzDCiI?si=NxL7qz2yq6QVMprp", "https://www.youtube.com/shorts/x5l3DSej21g"]}, {"title": "Combination Sum II", "videos": ["https://www.youtube.com/shorts/Zx0BA3lKuZE", "https://youtu.be/jkgZw2WEaqA?si=Q5XKYqgBvMVL1wHe"]}, {"title": "Word Search", "videos": ["https://youtu.be/pfiQ_PS1g8E?si=HpEBv-fEsZ3DTb3U", "https://youtu.be/whyax_vB8xY?si=nqtZOs8Ylq6PlFFr"]}, {"title": "Letter Combination", "videos": ["https://www.youtube.com/shorts/rFJsipH8zmQ", "https://youtu.be/tWnHbSHwNmA?si=5eA_LRqnKHALCz1h"]}, {"title": "N - Queens", "videos": ["https://youtu.be/BdSJnIdR-4s?si=TcZlBH63_Yu16NOo", "https://youtu.be/xFv_Hl4B83A?si=t3MCBLG3_gfAYkm_"]}]}, {"category": "1D Dynamic Programming", "problems": [{"title": "Climbing Stairs", "videos": ["https://www.youtube.com/shorts/x4epBH6HF10", "https://youtu.be/mLfjzJsN8us?si=Zd_rn4Zhg9i55B53"]}, {"title": "Maximum Product Subarray", "videos": ["https://www.youtube.com/watch?v=lXVy6YWFcRM", "https://www.youtube.com/watch?v=hnswaLJvr6g"]}, {"title": "Largest Palindrome Substring", "videos": ["https://www.youtube.com/shorts/w9Lf10KnAXg", "https://www.youtube.com/shorts/_4BHoBr9b_M"]}, {"title": "Longest Increasing Subsequence", "videos": ["https://www.youtube.com/shorts/c7KKHRH5S_c", "https://www.youtube.com/watch?v=okgM58Tv9jQ"]}, {"title": "Coin Change", "videos": ["https://www.youtube.com/shorts/ZM9svNsfzc4", "https://youtu.be/GBBRjI_1LRI?si=PTltvfzrXLRhtnjy"]}]}, {"category": "2D Dynamic Proramming", "problems": [{"title": "Unique Paths", "videos": ["https://youtu.be/sdE0A2Oxofw?si=BaamciE14dOKC743", "https://youtu.be/IlEsdxuD4lY?si=rCi4WjhmfvNOocT3"]}, {"title": "Longest Common Subsequence", "videos": ["https://www.youtube.com/shorts/BczMQobBHD0", "https://youtu.be/NPZn9jBrX8U?si=IflnTrrwGnTlyj3O"]}, {"title": "Target Sum", "videos": ["https://www.youtube.com/watch?v=b3GD8263-PQ"]}]}, {"category": "Greedy", "problems": [{"title": "Maximum Subarray", "videos": ["https://youtu.be/9IZYqostl2M?si=5lpsrHCHlHzJMIkR", "https://youtu.be/AHZpyENo7k4?si=2x3WziN-yB5lPqmF"]}, {"title": "Gas Station", "videos": ["https://youtu.be/SmTow5Ht4iU?si=fThn1hITuhf8Kns4", "https://www.youtube.com/shorts/-7G-fIB6BfU"]}, {"title": "Valid Parenthesis", "videos": ["https://www.youtube.com/shorts/2EBpJ0dn0z8", "https://youtu.be/cHT6sG_hUZI?si=WaiwE-Mt66D-5jv8"]}]}, {"category": "Intervals", "problems": [{"title": "Merge Intervals", "videos": ["https://youtu.be/IexN60k62jo?si=HeOmVxSDcMI56chD", "https://youtu.be/44H3cEC2fFM?si=ngkFa24vyhULVFb4"]}, {"title": "Meeting Rooms", "videos": ["https://www.youtube.com/shorts/z0iAniXoAwM", "https://youtu.be/ayPCTWjpabU?si=Ymp6cTOcQOCyaMwx"]}]}];
+
+function getYoutubeId(url){
+  try{
+    const u = new URL(url);
+    if(u.hostname.includes('youtu.be')){
+      return u.pathname.split('/').filter(Boolean)[0];
+    }
+    if(u.pathname.includes('/shorts/')){
+      return u.pathname.split('/shorts/')[1].split('/')[0];
+    }
+    if(u.searchParams.get('v')){
+      return u.searchParams.get('v');
+    }
+    const parts = u.pathname.split('/').filter(Boolean);
+    return parts[parts.length-1];
+  }catch(e){ return null; }
+}
+
+const content = document.getElementById('content');
+
+function playIcon(){
+  return '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"></path></svg>';
+}
+
+function render(filter=''){
+  content.innerHTML = '';
+  const q = filter.trim().toLowerCase();
+
+  DATA.forEach(cat => {
+    const problems = cat.problems.filter(p =>
+      !q || p.title.toLowerCase().includes(q) || cat.category.toLowerCase().includes(q)
+    );
+    if(problems.length === 0) return;
+
+    const section = document.createElement('div');
+    section.className = 'category';
+
+    const title = document.createElement('div');
+    title.className = 'category-title';
+    title.textContent = cat.category;
+    section.appendChild(title);
+
+    const grid = document.createElement('div');
+    grid.className = 'grid';
+
+    problems.forEach(p => {
+      const card = document.createElement('div');
+      card.className = 'card';
+
+      const h3 = document.createElement('h3');
+      h3.textContent = p.title;
+      card.appendChild(h3);
+
+      const btnWrap = document.createElement('div');
+      btnWrap.className = 'video-btns';
+
+      p.videos.forEach((url, idx) => {
+        const id = getYoutubeId(url);
+        if(!id) return;
+        const btn = document.createElement('button');
+        btn.className = 'video-btn';
+        btn.innerHTML = playIcon() + '<span>' + (p.videos.length > 1 ? 'Video ' + (idx+1) : 'Watch') + '</span>';
+        btn.addEventListener('click', () => openModal(id));
+        btnWrap.appendChild(btn);
+      });
+
+      card.appendChild(btnWrap);
+      grid.appendChild(card);
+    });
+
+    section.appendChild(grid);
+    content.appendChild(section);
+  });
+
+  if(content.innerHTML === ''){
+    content.innerHTML = '<p style="color:var(--text-soft); text-align:center; padding:40px 0;">No matches found.</p>';
+  }
+}
+
+// Modal
+const overlay = document.getElementById('modalOverlay');
+const frame = document.getElementById('modalFrame');
+const closeBtn = document.getElementById('modalClose');
+
+const modalFallback = document.getElementById('modalFallback');
+const modalSpinner = document.getElementById('modalSpinner');
+
+frame.addEventListener('load', () => {
+  if(frame.src){
+    frame.classList.add('loaded');
+    modalSpinner.classList.add('hidden');
+  }
+});
+
+function openModal(videoId){
+  const origin = encodeURIComponent(window.location.origin);
+  frame.classList.remove('loaded');
+  modalSpinner.classList.remove('hidden');
+  frame.src = 'https://www.youtube-nocookie.com/embed/' + videoId + '?autoplay=1&rel=0&modestbranding=1&origin=' + origin;
+  modalFallback.href = 'https://www.youtube.com/watch?v=' + videoId;
+  overlay.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeModal(){
+  overlay.classList.remove('open');
+  frame.src = '';
+  document.body.style.overflow = '';
+}
+closeBtn.addEventListener('click', closeModal);
+overlay.addEventListener('click', (e) => { if(e.target === overlay) closeModal(); });
+document.addEventListener('keydown', (e) => { if(e.key === 'Escape') closeModal(); });
+
+// Search
+document.getElementById('searchInput').addEventListener('input', (e) => render(e.target.value));
+
+// Theme toggle
+const themeToggle = document.getElementById('themeToggle');
+const iconSun = document.getElementById('iconSun');
+const iconMoon = document.getElementById('iconMoon');
+
+function applyTheme(theme){
+  document.documentElement.setAttribute('data-theme', theme);
+  document.body.setAttribute('data-theme', theme);
+  if(theme === 'dark'){
+    iconSun.classList.add('hidden');
+    iconMoon.classList.remove('hidden');
+  } else {
+    iconSun.classList.remove('hidden');
+    iconMoon.classList.add('hidden');
+  }
+  localStorage.setItem('theme', theme);
+}
+
+themeToggle.addEventListener('click', () => {
+  const current = document.body.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+  applyTheme(current === 'dark' ? 'light' : 'dark');
+});
+
+const saved = localStorage.getItem('theme') ||
+  (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+applyTheme(saved);
+
+render();
+</script>
+</body>
+</html>
