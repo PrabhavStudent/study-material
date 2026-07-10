@@ -96,7 +96,7 @@
 
   .grid{
     display:grid;
-    grid-template-columns:repeat(auto-fill, minmax(240px,1fr));
+    grid-template-columns:repeat(auto-fill, minmax(250px,1fr));
     gap:14px;
   }
 
@@ -109,9 +109,10 @@
     transition: transform .2s ease, border-color .2s ease;
   }
   .card:hover{ transform:translateY(-2px); border-color:var(--accent); }
-  .card h3{ margin:0 0 12px; font-size:15px; font-weight:600; letter-spacing:-0.01em; }
+  .card h3{ margin:0 0 12px; font-size:15px; font-weight:600; letter-spacing:-0.01em; display:flex; align-items:center; gap:6px; }
+  .note-dot{ width:6px; height:6px; border-radius:50%; background:var(--accent); flex-shrink:0; }
 
-  .video-btns{ display:flex; flex-wrap:wrap; gap:8px; }
+  .video-btns{ display:flex; flex-wrap:wrap; gap:8px; margin-bottom:8px; }
   .video-btn{
     border:1px solid var(--border);
     background:var(--bg);
@@ -126,9 +127,24 @@
   .video-btn:hover{ background:var(--accent); border-color:var(--accent); color:#fff; }
   .video-btn svg{width:13px;height:13px;}
 
+  .util-row{ display:flex; flex-wrap:wrap; gap:8px; padding-top:8px; border-top:1px dashed var(--border); }
+  .util-btn{
+    border:1px solid transparent;
+    background:transparent;
+    color:var(--text-soft);
+    font-size:12.5px;
+    padding:6px 2px;
+    cursor:pointer;
+    display:flex; align-items:center; gap:5px;
+    transition: color .2s ease;
+    text-decoration:none;
+  }
+  .util-btn:hover{ color:var(--accent); }
+  .util-btn svg{ width:14px; height:14px; }
+
   .hidden{ display:none !important; }
 
-  /* Modal */
+  /* Video Modal */
   .modal-overlay{
     position:fixed; inset:0; background:rgba(0,0,0,0.6);
     display:flex; align-items:center; justify-content:center;
@@ -171,6 +187,85 @@
   }
   .modal-close:hover{ background:rgba(0,0,0,0.8); }
 
+  /* Notes Modal */
+  .notes-overlay{
+    position:fixed; inset:0; background:rgba(0,0,0,0.55);
+    display:flex; align-items:flex-start; justify-content:center;
+    z-index:100; padding:30px 20px;
+    opacity:0; pointer-events:none;
+    transition:opacity .25s ease;
+    overflow-y:auto;
+  }
+  .notes-overlay.open{ opacity:1; pointer-events:auto; }
+  .notes-box{
+    background:var(--surface);
+    width:100%; max-width:820px;
+    border-radius:16px;
+    box-shadow:0 20px 60px rgba(0,0,0,0.4);
+    transform:scale(.97) translateY(6px);
+    transition:transform .25s ease;
+    overflow:hidden;
+  }
+  .notes-overlay.open .notes-box{ transform:scale(1) translateY(0); }
+  .notes-head{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:16px 20px; border-bottom:1px solid var(--border);
+  }
+  .notes-head h2{ margin:0; font-size:16px; font-weight:600; }
+  .notes-head .save-status{ font-size:12px; color:var(--text-soft); }
+  .notes-close{
+    background:none; border:none; color:var(--text-soft); font-size:20px;
+    cursor:pointer; line-height:1; padding:4px;
+  }
+  .notes-close:hover{ color:var(--accent); }
+
+  .notes-tabs{ display:flex; gap:4px; padding:12px 20px 0; }
+  .notes-tab{
+    padding:8px 16px; border-radius:8px 8px 0 0; cursor:pointer;
+    font-size:13px; font-weight:600; color:var(--text-soft);
+    border:1px solid transparent;
+  }
+  .notes-tab.active{ color:var(--accent); border-color:var(--border); border-bottom-color:var(--surface); background:var(--surface); position:relative; top:1px; }
+
+  .notes-body{ padding:16px 20px 20px; }
+  .notes-pane{ display:none; }
+  .notes-pane.active{ display:block; }
+
+  #notesText{
+    width:100%; min-height:220px; resize:vertical;
+    border:1px solid var(--border); border-radius:10px;
+    background:var(--bg); color:var(--text);
+    padding:12px 14px; font-size:14px; line-height:1.55;
+    font-family:inherit; outline:none;
+  }
+  #notesText:focus{ border-color:var(--accent); }
+
+  .draw-toolbar{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:10px; }
+  .draw-toolbar input[type=color]{
+    width:32px; height:32px; border-radius:8px; border:1px solid var(--border);
+    padding:0; cursor:pointer; background:none;
+  }
+  .draw-toolbar input[type=range]{ width:90px; }
+  .tool-btn{
+    border:1px solid var(--border); background:var(--bg); color:var(--text);
+    font-size:12.5px; padding:7px 11px; border-radius:8px; cursor:pointer;
+  }
+  .tool-btn.active{ border-color:var(--accent); color:var(--accent); }
+  .tool-btn:hover{ border-color:var(--accent); }
+
+  .canvas-wrap{
+    border:1px solid var(--border); border-radius:10px; overflow:auto;
+    max-height:60vh; background:#fff;
+  }
+  #notesCanvas{ display:block; touch-action:none; cursor:crosshair; }
+
+  .expand-row{ display:flex; justify-content:center; margin-top:10px; }
+  .expand-btn{
+    border:1px dashed var(--border); background:transparent; color:var(--text-soft);
+    font-size:12.5px; padding:6px 14px; border-radius:20px; cursor:pointer;
+  }
+  .expand-btn:hover{ border-color:var(--accent); color:var(--accent); }
+
   footer{
     text-align:center; padding:30px 20px 50px;
     color:var(--text-soft); font-size:12px;
@@ -179,6 +274,7 @@
   @media (max-width:520px){
     header{ padding:14px 18px; }
     main{ padding:26px 16px 60px; }
+    .draw-toolbar{ gap:6px; }
   }
 </style>
 </head>
@@ -210,8 +306,9 @@
   <div id="content"></div>
 </main>
 
-<footer>Built for focused DSA revision · videos play right here</footer>
+<footer>Built for focused DSA revision · videos play right here · notes save to this browser</footer>
 
+<!-- Video Modal -->
 <div class="modal-overlay" id="modalOverlay">
   <div class="modal-box">
     <button class="modal-close" id="modalClose">&times;</button>
@@ -223,8 +320,49 @@
   </div>
 </div>
 
+<!-- Notes Modal -->
+<div class="notes-overlay" id="notesOverlay">
+  <div class="notes-box">
+    <div class="notes-head">
+      <h2 id="notesTitle">Notes</h2>
+      <div style="display:flex; align-items:center; gap:14px;">
+        <span class="save-status" id="saveStatus">Saved</span>
+        <button class="notes-close" id="notesClose">&times;</button>
+      </div>
+    </div>
+    <div class="notes-tabs">
+      <div class="notes-tab active" data-tab="text" id="tabText">Text</div>
+      <div class="notes-tab" data-tab="draw" id="tabDraw">Draw</div>
+    </div>
+    <div class="notes-body">
+      <div class="notes-pane active" id="paneText">
+        <textarea id="notesText" placeholder="Write your notes for this problem here — approach, edge cases, complexity, gotchas..."></textarea>
+      </div>
+      <div class="notes-pane" id="paneDraw">
+        <div class="draw-toolbar">
+          <input type="color" id="penColor" value="#1f1d1a">
+          <label style="font-size:12px; color:var(--text-soft); display:flex; align-items:center; gap:6px;">Size <input type="range" id="penSize" min="1" max="20" value="3"></label>
+          <button class="tool-btn active" id="toolPen">✏️ Pen</button>
+          <button class="tool-btn" id="toolEraser">🧹 Eraser</button>
+          <button class="tool-btn" id="toolClear">Clear</button>
+        </div>
+        <div class="canvas-wrap" id="canvasWrap">
+          <canvas id="notesCanvas" width="740" height="360"></canvas>
+        </div>
+        <div class="expand-row">
+          <button class="expand-btn" id="expandCanvas">+ Expand canvas</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
-const DATA = [{"category": "Stack Problems", "problems": [{"title": "Car Fleet", "videos": ["https://www.youtube.com/shorts/jMGyuMaCkpk", "https://www.youtube.com/watch?v=Pr6T-3yB9RM"]}, {"title": "Valid Parenthesis", "videos": ["https://www.youtube.com/watch?v=NlHupEeDXzY", "https://www.youtube.com/watch?v=aKTGpBeOeZg&t=328s"]}]}, {"category": "Binary Search", "problems": [{"title": "Search 2d Matrix", "videos": ["https://www.youtube.com/watch?v=LEFFjgt5i6w", "https://www.youtube.com/shorts/SqLlqwa8sAQ"]}, {"title": "Minimum in Rotated Sorted Array", "videos": ["https://www.youtube.com/shorts/10dQo7ek2Ws", "https://youtu.be/nIVW4P8b1VA?si=gXD9dMgR9IFfh4c8"]}]}, {"category": "Linked List", "problems": [{"title": "Reverse Linked List", "videos": ["https://youtu.be/R-CKBYnOv1U?si=utxmdnG_SzhJbXhI", "https://youtube.com/shorts/llqdLez5dv8?si=q0Vh7PzyqVBT9jRK"]}, {"title": "Merge K-sorted List", "videos": ["https://www.youtube.com/shorts/LP46VHfRvDU", "https://youtu.be/VV19JFP6-0c?si=h2yN4JUcZLC7Mww3"]}, {"title": "Reverse nodes in K- Group", "videos": ["https://youtu.be/-swgIiMIlJo?si=q38zZOVRrrtJ38Pg", "https://www.youtube.com/shorts/JCLhtsboYEw"]}]}, {"category": "Heap", "problems": [{"title": "Kth Largest Element in a stream", "videos": ["https://www.youtube.com/shorts/RIy1nGqSONg", "https://www.youtube.com/watch?v=hOjcdrqMoQ8"]}, {"title": "Task Scheduler", "videos": ["https://youtu.be/s8p8ukTyA2I?si=dyZId-AW2tTGH2nC"]}, {"title": "Twitter", "videos": ["https://www.youtube.com/shorts/apS1ohnRJNE", "https://youtu.be/tH051S6aM5M?si=u8_AdtgIzvUd1C7n"]}]}, {"category": "Back tracking", "problems": [{"title": "Subsets", "videos": ["https://youtu.be/pNzljlzDCiI?si=NxL7qz2yq6QVMprp", "https://www.youtube.com/shorts/x5l3DSej21g"]}, {"title": "Combination Sum II", "videos": ["https://www.youtube.com/shorts/Zx0BA3lKuZE", "https://youtu.be/jkgZw2WEaqA?si=Q5XKYqgBvMVL1wHe"]}, {"title": "Word Search", "videos": ["https://youtu.be/pfiQ_PS1g8E?si=HpEBv-fEsZ3DTb3U", "https://youtu.be/whyax_vB8xY?si=nqtZOs8Ylq6PlFFr"]}, {"title": "Letter Combination", "videos": ["https://www.youtube.com/shorts/rFJsipH8zmQ", "https://youtu.be/tWnHbSHwNmA?si=5eA_LRqnKHALCz1h"]}, {"title": "N - Queens", "videos": ["https://youtu.be/BdSJnIdR-4s?si=TcZlBH63_Yu16NOo", "https://youtu.be/xFv_Hl4B83A?si=t3MCBLG3_gfAYkm_"]}]}, {"category": "1D Dynamic Programming", "problems": [{"title": "Climbing Stairs", "videos": ["https://www.youtube.com/shorts/x4epBH6HF10", "https://youtu.be/mLfjzJsN8us?si=Zd_rn4Zhg9i55B53"]}, {"title": "Maximum Product Subarray", "videos": ["https://www.youtube.com/watch?v=lXVy6YWFcRM", "https://www.youtube.com/watch?v=hnswaLJvr6g"]}, {"title": "Largest Palindrome Substring", "videos": ["https://www.youtube.com/shorts/w9Lf10KnAXg", "https://www.youtube.com/shorts/_4BHoBr9b_M"]}, {"title": "Longest Increasing Subsequence", "videos": ["https://www.youtube.com/shorts/c7KKHRH5S_c", "https://www.youtube.com/watch?v=okgM58Tv9jQ"]}, {"title": "Coin Change", "videos": ["https://www.youtube.com/shorts/ZM9svNsfzc4", "https://youtu.be/GBBRjI_1LRI?si=PTltvfzrXLRhtnjy"]}]}, {"category": "2D Dynamic Proramming", "problems": [{"title": "Unique Paths", "videos": ["https://youtu.be/sdE0A2Oxofw?si=BaamciE14dOKC743", "https://youtu.be/IlEsdxuD4lY?si=rCi4WjhmfvNOocT3"]}, {"title": "Longest Common Subsequence", "videos": ["https://www.youtube.com/shorts/BczMQobBHD0", "https://youtu.be/NPZn9jBrX8U?si=IflnTrrwGnTlyj3O"]}, {"title": "Target Sum", "videos": ["https://www.youtube.com/watch?v=b3GD8263-PQ"]}]}, {"category": "Greedy", "problems": [{"title": "Maximum Subarray", "videos": ["https://youtu.be/9IZYqostl2M?si=5lpsrHCHlHzJMIkR", "https://youtu.be/AHZpyENo7k4?si=2x3WziN-yB5lPqmF"]}, {"title": "Gas Station", "videos": ["https://youtu.be/SmTow5Ht4iU?si=fThn1hITuhf8Kns4", "https://www.youtube.com/shorts/-7G-fIB6BfU"]}, {"title": "Valid Parenthesis", "videos": ["https://www.youtube.com/shorts/2EBpJ0dn0z8", "https://youtu.be/cHT6sG_hUZI?si=WaiwE-Mt66D-5jv8"]}]}, {"category": "Intervals", "problems": [{"title": "Merge Intervals", "videos": ["https://youtu.be/IexN60k62jo?si=HeOmVxSDcMI56chD", "https://youtu.be/44H3cEC2fFM?si=ngkFa24vyhULVFb4"]}, {"title": "Meeting Rooms", "videos": ["https://www.youtube.com/shorts/z0iAniXoAwM", "https://youtu.be/ayPCTWjpabU?si=Ymp6cTOcQOCyaMwx"]}]}];
+const DATA = [{"category": "Stack Problems", "problems": [{"title": "Car Fleet", "videos": ["https://www.youtube.com/shorts/jMGyuMaCkpk", "https://www.youtube.com/watch?v=Pr6T-3yB9RM"], "neetcode": "https://neetcode.io/problems/car-fleet"}, {"title": "Valid Parenthesis", "videos": ["https://www.youtube.com/watch?v=NlHupEeDXzY", "https://www.youtube.com/watch?v=aKTGpBeOeZg&t=328s"], "neetcode": "https://neetcode.io/problems/validate-parentheses"}]}, {"category": "Binary Search", "problems": [{"title": "Search 2d Matrix", "videos": ["https://www.youtube.com/watch?v=LEFFjgt5i6w", "https://www.youtube.com/shorts/SqLlqwa8sAQ"], "neetcode": "https://neetcode.io/problems/search-2d-matrix"}, {"title": "Minimum in Rotated Sorted Array", "videos": ["https://www.youtube.com/shorts/10dQo7ek2Ws", "https://youtu.be/nIVW4P8b1VA?si=gXD9dMgR9IFfh4c8"], "neetcode": "https://neetcode.io/problems/find-minimum-in-rotated-sorted-array"}]}, {"category": "Linked List", "problems": [{"title": "Reverse Linked List", "videos": ["https://youtu.be/R-CKBYnOv1U?si=utxmdnG_SzhJbXhI", "https://youtube.com/shorts/llqdLez5dv8?si=q0Vh7PzyqVBT9jRK"], "neetcode": "https://neetcode.io/problems/reverse-a-linked-list"}, {"title": "Merge K-sorted List", "videos": ["https://www.youtube.com/shorts/LP46VHfRvDU", "https://youtu.be/VV19JFP6-0c?si=h2yN4JUcZLC7Mww3"], "neetcode": "https://neetcode.io/problems/merge-k-sorted-linked-lists"}, {"title": "Reverse nodes in K- Group", "videos": ["https://youtu.be/-swgIiMIlJo?si=q38zZOVRrrtJ38Pg", "https://www.youtube.com/shorts/JCLhtsboYEw"], "neetcode": "https://neetcode.io/problems/reverse-nodes-in-k-group"}]}, {"category": "Heap", "problems": [{"title": "Kth Largest Element in a stream", "videos": ["https://www.youtube.com/shorts/RIy1nGqSONg", "https://www.youtube.com/watch?v=hOjcdrqMoQ8"], "neetcode": "https://neetcode.io/problems/kth-largest-integer-in-a-stream"}, {"title": "Task Scheduler", "videos": ["https://youtu.be/s8p8ukTyA2I?si=dyZId-AW2tTGH2nC"], "neetcode": "https://neetcode.io/problems/task-scheduling"}, {"title": "Twitter", "videos": ["https://www.youtube.com/shorts/apS1ohnRJNE", "https://youtu.be/tH051S6aM5M?si=u8_AdtgIzvUd1C7n"], "neetcode": "https://neetcode.io/problems/design-twitter-feed"}]}, {"category": "Back tracking", "problems": [{"title": "Subsets", "videos": ["https://youtu.be/pNzljlzDCiI?si=NxL7qz2yq6QVMprp", "https://www.youtube.com/shorts/x5l3DSej21g"], "neetcode": "https://neetcode.io/problems/subsets"}, {"title": "Combination Sum II", "videos": ["https://www.youtube.com/shorts/Zx0BA3lKuZE", "https://youtu.be/jkgZw2WEaqA?si=Q5XKYqgBvMVL1wHe"], "neetcode": "https://neetcode.io/problems/combination-target-sum-ii"}, {"title": "Word Search", "videos": ["https://youtu.be/pfiQ_PS1g8E?si=HpEBv-fEsZ3DTb3U", "https://youtu.be/whyax_vB8xY?si=nqtZOs8Ylq6PlFFr"], "neetcode": "https://neetcode.io/problems/search-for-word"}, {"title": "Letter Combination", "videos": ["https://www.youtube.com/shorts/rFJsipH8zmQ", "https://youtu.be/tWnHbSHwNmA?si=5eA_LRqnKHALCz1h"], "neetcode": "https://neetcode.io/problems/combinations-of-a-phone-number"}, {"title": "N - Queens", "videos": ["https://youtu.be/BdSJnIdR-4s?si=TcZlBH63_Yu16NOo", "https://youtu.be/xFv_Hl4B83A?si=t3MCBLG3_gfAYkm_"], "neetcode": "https://neetcode.io/problems/n-queens"}]}, {"category": "1D Dynamic Programming", "problems": [{"title": "Climbing Stairs", "videos": ["https://www.youtube.com/shorts/x4epBH6HF10", "https://youtu.be/mLfjzJsN8us?si=Zd_rn4Zhg9i55B53"], "neetcode": "https://neetcode.io/problems/climbing-stairs"}, {"title": "Maximum Product Subarray", "videos": ["https://www.youtube.com/watch?v=lXVy6YWFcRM", "https://www.youtube.com/watch?v=hnswaLJvr6g"], "neetcode": "https://neetcode.io/problems/maximum-product-subarray"}, {"title": "Largest Palindrome Substring", "videos": ["https://www.youtube.com/shorts/w9Lf10KnAXg", "https://www.youtube.com/shorts/_4BHoBr9b_M"], "neetcode": "https://neetcode.io/problems/longest-palindromic-substring"}, {"title": "Longest Increasing Subsequence", "videos": ["https://www.youtube.com/shorts/c7KKHRH5S_c", "https://www.youtube.com/watch?v=okgM58Tv9jQ"], "neetcode": "https://neetcode.io/problems/longest-increasing-subsequence"}, {"title": "Coin Change", "videos": ["https://www.youtube.com/shorts/ZM9svNsfzc4", "https://youtu.be/GBBRjI_1LRI?si=PTltvfzrXLRhtnjy"], "neetcode": "https://neetcode.io/problems/coin-change"}]}, {"category": "2D Dynamic Proramming", "problems": [{"title": "Unique Paths", "videos": ["https://youtu.be/sdE0A2Oxofw?si=BaamciE14dOKC743", "https://youtu.be/IlEsdxuD4lY?si=rCi4WjhmfvNOocT3"], "neetcode": "https://neetcode.io/problems/count-paths"}, {"title": "Longest Common Subsequence", "videos": ["https://www.youtube.com/shorts/BczMQobBHD0", "https://youtu.be/NPZn9jBrX8U?si=IflnTrrwGnTlyj3O"], "neetcode": "https://neetcode.io/problems/longest-common-subsequence"}, {"title": "Target Sum", "videos": ["https://www.youtube.com/watch?v=b3GD8263-PQ"], "neetcode": "https://neetcode.io/problems/target-sum"}]}, {"category": "Greedy", "problems": [{"title": "Maximum Subarray", "videos": ["https://youtu.be/9IZYqostl2M?si=5lpsrHCHlHzJMIkR", "https://youtu.be/AHZpyENo7k4?si=2x3WziN-yB5lPqmF"], "neetcode": "https://neetcode.io/problems/maximum-subarray"}, {"title": "Gas Station", "videos": ["https://youtu.be/SmTow5Ht4iU?si=fThn1hITuhf8Kns4", "https://www.youtube.com/shorts/-7G-fIB6BfU"], "neetcode": "https://neetcode.io/problems/gas-station"}, {"title": "Valid Parenthesis", "videos": ["https://www.youtube.com/shorts/2EBpJ0dn0z8", "https://youtu.be/cHT6sG_hUZI?si=WaiwE-Mt66D-5jv8"], "neetcode": "https://neetcode.io/problems/validate-parentheses"}]}, {"category": "Intervals", "problems": [{"title": "Merge Intervals", "videos": ["https://youtu.be/IexN60k62jo?si=HeOmVxSDcMI56chD", "https://youtu.be/44H3cEC2fFM?si=ngkFa24vyhULVFb4"], "neetcode": "https://neetcode.io/problems/merge-intervals"}, {"title": "Meeting Rooms", "videos": ["https://www.youtube.com/shorts/z0iAniXoAwM", "https://youtu.be/ayPCTWjpabU?si=Ymp6cTOcQOCyaMwx"], "neetcode": "https://neetcode.io/problems/meeting-schedule"}]}];
+
+function slugify(str){
+  return str.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+}
 
 function getYoutubeId(url){
   try{
@@ -247,6 +385,18 @@ const content = document.getElementById('content');
 
 function playIcon(){
   return '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"></path></svg>';
+}
+function noteIcon(){
+  return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"></path></svg>';
+}
+function linkIcon(){
+  return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.07 0l2.83-2.83a5 5 0 0 0-7.07-7.07l-1.5 1.5"></path><path d="M14 11a5 5 0 0 0-7.07 0L4.1 13.83a5 5 0 0 0 7.07 7.07l1.5-1.5"></path></svg>';
+}
+
+function hasNotes(id){
+  const t = localStorage.getItem('dsa-note-text:' + id);
+  const d = localStorage.getItem('dsa-note-draw:' + id);
+  return !!(t && t.trim()) || !!d;
 }
 
 function render(filter=''){
@@ -271,27 +421,49 @@ function render(filter=''){
     grid.className = 'grid';
 
     problems.forEach(p => {
+      const id = slugify(cat.category + '-' + p.title);
       const card = document.createElement('div');
       card.className = 'card';
 
       const h3 = document.createElement('h3');
-      h3.textContent = p.title;
+      h3.innerHTML = (hasNotes(id) ? '<span class="note-dot" title="Has notes"></span>' : '') + '<span>' + p.title + '</span>';
       card.appendChild(h3);
 
       const btnWrap = document.createElement('div');
       btnWrap.className = 'video-btns';
 
       p.videos.forEach((url, idx) => {
-        const id = getYoutubeId(url);
-        if(!id) return;
+        const vid = getYoutubeId(url);
+        if(!vid) return;
         const btn = document.createElement('button');
         btn.className = 'video-btn';
         btn.innerHTML = playIcon() + '<span>' + (p.videos.length > 1 ? 'Video ' + (idx+1) : 'Watch') + '</span>';
-        btn.addEventListener('click', () => openModal(id));
+        btn.addEventListener('click', () => openModal(vid));
         btnWrap.appendChild(btn);
       });
 
       card.appendChild(btnWrap);
+
+      const utilRow = document.createElement('div');
+      utilRow.className = 'util-row';
+
+      const notesBtn = document.createElement('button');
+      notesBtn.className = 'util-btn';
+      notesBtn.innerHTML = noteIcon() + '<span>Notes</span>';
+      notesBtn.addEventListener('click', () => openNotes(id, p.title, card, h3));
+      utilRow.appendChild(notesBtn);
+
+      if(p.neetcode){
+        const ncLink = document.createElement('a');
+        ncLink.className = 'util-btn';
+        ncLink.href = p.neetcode;
+        ncLink.target = '_blank';
+        ncLink.rel = 'noopener';
+        ncLink.innerHTML = linkIcon() + '<span>NeetCode</span>';
+        utilRow.appendChild(ncLink);
+      }
+
+      card.appendChild(utilRow);
       grid.appendChild(card);
     });
 
@@ -304,11 +476,10 @@ function render(filter=''){
   }
 }
 
-// Modal
+/* ---------------- Video Modal ---------------- */
 const overlay = document.getElementById('modalOverlay');
 const frame = document.getElementById('modalFrame');
 const closeBtn = document.getElementById('modalClose');
-
 const modalFallback = document.getElementById('modalFallback');
 const modalSpinner = document.getElementById('modalSpinner');
 
@@ -335,12 +506,186 @@ function closeModal(){
 }
 closeBtn.addEventListener('click', closeModal);
 overlay.addEventListener('click', (e) => { if(e.target === overlay) closeModal(); });
-document.addEventListener('keydown', (e) => { if(e.key === 'Escape') closeModal(); });
 
-// Search
+/* ---------------- Notes Modal ---------------- */
+const notesOverlay = document.getElementById('notesOverlay');
+const notesClose = document.getElementById('notesClose');
+const notesTitle = document.getElementById('notesTitle');
+const notesText = document.getElementById('notesText');
+const saveStatus = document.getElementById('saveStatus');
+const tabText = document.getElementById('tabText');
+const tabDraw = document.getElementById('tabDraw');
+const paneText = document.getElementById('paneText');
+const paneDraw = document.getElementById('paneDraw');
+const canvas = document.getElementById('notesCanvas');
+const ctx = canvas.getContext('2d');
+const canvasWrap = document.getElementById('canvasWrap');
+const penColor = document.getElementById('penColor');
+const penSize = document.getElementById('penSize');
+const toolPen = document.getElementById('toolPen');
+const toolEraser = document.getElementById('toolEraser');
+const toolClear = document.getElementById('toolClear');
+const expandCanvas = document.getElementById('expandCanvas');
+
+let currentNoteId = null;
+let currentCard = null;
+let currentH3 = null;
+let currentTool = 'pen';
+let drawing = false;
+let saveTimer = null;
+
+function fillWhite(){
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+}
+
+function openNotes(id, title, cardEl, h3El){
+  currentNoteId = id;
+  currentCard = cardEl;
+  currentH3 = h3El;
+  notesTitle.textContent = 'Notes — ' + title;
+  saveStatus.textContent = 'Saved';
+
+  // load text
+  notesText.value = localStorage.getItem('dsa-note-text:' + id) || '';
+
+  // reset canvas to default size then load drawing
+  canvas.width = 740;
+  canvas.height = 360;
+  fillWhite();
+  const savedDraw = localStorage.getItem('dsa-note-draw:' + id);
+  const savedDims = localStorage.getItem('dsa-note-dims:' + id);
+  if(savedDims){
+    try{
+      const dims = JSON.parse(savedDims);
+      canvas.width = dims.w;
+      canvas.height = dims.h;
+      fillWhite();
+    }catch(e){}
+  }
+  if(savedDraw){
+    const img = new Image();
+    img.onload = () => { ctx.drawImage(img, 0, 0); };
+    img.src = savedDraw;
+  }
+
+  switchTab('text');
+  notesOverlay.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeNotes(){
+  notesOverlay.classList.remove('open');
+  document.body.style.overflow = '';
+  if(currentH3){
+    currentH3.innerHTML = (hasNotes(currentNoteId) ? '<span class="note-dot" title="Has notes"></span>' : '') + '<span>' + currentH3.textContent.trim() + '</span>';
+  }
+}
+notesClose.addEventListener('click', closeNotes);
+notesOverlay.addEventListener('click', (e) => { if(e.target === notesOverlay) closeNotes(); });
+
+function switchTab(tab){
+  tabText.classList.toggle('active', tab === 'text');
+  tabDraw.classList.toggle('active', tab === 'draw');
+  paneText.classList.toggle('active', tab === 'text');
+  paneDraw.classList.toggle('active', tab === 'draw');
+}
+tabText.addEventListener('click', () => switchTab('text'));
+tabDraw.addEventListener('click', () => switchTab('draw'));
+
+function markSaving(){
+  saveStatus.textContent = 'Saving…';
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => { saveStatus.textContent = 'Saved'; }, 500);
+}
+
+notesText.addEventListener('input', () => {
+  if(!currentNoteId) return;
+  markSaving();
+  clearTimeout(notesText._debounce);
+  notesText._debounce = setTimeout(() => {
+    localStorage.setItem('dsa-note-text:' + currentNoteId, notesText.value);
+  }, 400);
+});
+
+function saveDrawing(){
+  if(!currentNoteId) return;
+  markSaving();
+  localStorage.setItem('dsa-note-draw:' + currentNoteId, canvas.toDataURL('image/png'));
+  localStorage.setItem('dsa-note-dims:' + currentNoteId, JSON.stringify({w: canvas.width, h: canvas.height}));
+}
+
+function getPos(e){
+  const rect = canvas.getBoundingClientRect();
+  const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+  const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+  return {
+    x: (clientX - rect.left) * (canvas.width / rect.width),
+    y: (clientY - rect.top) * (canvas.height / rect.height)
+  };
+}
+
+function startDraw(e){
+  drawing = true;
+  const pos = getPos(e);
+  ctx.beginPath();
+  ctx.moveTo(pos.x, pos.y);
+  e.preventDefault();
+}
+function moveDraw(e){
+  if(!drawing) return;
+  const pos = getPos(e);
+  ctx.lineWidth = penSize.value;
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  ctx.strokeStyle = currentTool === 'eraser' ? '#ffffff' : penColor.value;
+  ctx.lineTo(pos.x, pos.y);
+  ctx.stroke();
+  e.preventDefault();
+}
+function endDraw(){
+  if(!drawing) return;
+  drawing = false;
+  saveDrawing();
+}
+
+canvas.addEventListener('mousedown', startDraw);
+canvas.addEventListener('mousemove', moveDraw);
+window.addEventListener('mouseup', endDraw);
+canvas.addEventListener('touchstart', startDraw, {passive:false});
+canvas.addEventListener('touchmove', moveDraw, {passive:false});
+canvas.addEventListener('touchend', endDraw);
+
+toolPen.addEventListener('click', () => {
+  currentTool = 'pen';
+  toolPen.classList.add('active');
+  toolEraser.classList.remove('active');
+});
+toolEraser.addEventListener('click', () => {
+  currentTool = 'eraser';
+  toolEraser.classList.add('active');
+  toolPen.classList.remove('active');
+});
+toolClear.addEventListener('click', () => {
+  if(!confirm('Clear the entire drawing for this note?')) return;
+  fillWhite();
+  saveDrawing();
+});
+
+expandCanvas.addEventListener('click', () => {
+  const oldW = canvas.width, oldH = canvas.height;
+  const imgData = ctx.getImageData(0, 0, oldW, oldH);
+  canvas.height = oldH + 260;
+  fillWhite();
+  ctx.putImageData(imgData, 0, 0);
+  canvasWrap.scrollTop = canvasWrap.scrollHeight;
+  saveDrawing();
+});
+
+/* ---------------- Search ---------------- */
 document.getElementById('searchInput').addEventListener('input', (e) => render(e.target.value));
 
-// Theme toggle
+/* ---------------- Theme toggle ---------------- */
 const themeToggle = document.getElementById('themeToggle');
 const iconSun = document.getElementById('iconSun');
 const iconMoon = document.getElementById('iconMoon');
